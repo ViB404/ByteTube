@@ -1,5 +1,5 @@
 # ===== Stage 1: Builder =====
-FROM rustlang/rust:nightly-2024-03-26-slim as builder
+FROM rustlang/rust:nightly-slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y pkg-config libssl-dev build-essential ca-certificates
