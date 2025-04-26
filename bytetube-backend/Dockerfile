@@ -45,4 +45,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD curl --fail http://localhost:8080/health || exit 1
 
 # Command to run
-CMD ["./bytetube-backend"]
+CMD ["./target/release/bytetube-backend"]
