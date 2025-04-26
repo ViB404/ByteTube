@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Glitch animations */
+@keyframes glitch1 {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(5px) skew(10deg); }
+  60% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes glitch2 {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(-5px) skew(-10deg); }
+  60% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes bounce-once {
+  0% { transform: translateY(-15px); opacity: 0; }
+  50% { transform: translateY(5px); }
+  80% { transform: translateY(-2px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0) rotate(12deg); }
+  50% { transform: translateY(-15px) rotate(-5deg); }
+}
+
+@keyframes pixel-glitch {
+  0% { background-position: 0 0; }
+  20% { background-position: -10px 0; }
+  40% { background-position: 10px 0; }
+  60% { background-position: 0 -10px; }
+  80% { background-position: 5px 5px; }
+  100% { background-position: 0 0; }
+}
+
+.animate-glitch {
+  animation: glitch1 500ms infinite;
+}
+
+.animate-bounce-once {
+  animation: bounce-once 500ms forwards;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 5s infinite ease-in-out;
+}
+
+/* Cursor trail effect */
+.cursor-trail {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform-origin: center;
+  mix-blend-mode: screen;
+}
+
+/* Custom cursor styles for easter eggs */
+.troll-cursor {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 100 100'><text y='50%' x='50%' dy='.35em' text-anchor='middle' font-size='80'>💩</text></svg>") 20 20, auto;
+}
+
+/* Glitchy text effect */
+.text-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.text-glitch::before,
+.text-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip: rect(0, 0, 0, 0);
+}
+
+.text-glitch::before {
+  left: -2px;
+  text-shadow: 2px 0 #ff00c1;
+  animation: glitch1 500ms infinite linear alternate-reverse;
+}
+
+.text-glitch::after {
+  left: 2px;
+  text-shadow: -2px 0 #00fff9;
+  animation: glitch2 375ms infinite linear alternate-reverse;
+}
+
+/* Make headings occasionally rotate slightly for discomfort */
+h1, h2, h3 {
+  transition: transform 0.2s ease;
+}
+
+h1:hover, h2:hover, h3:hover {
+  transform: rotate(0.5deg);
+}
+
+/* Occasionally make buttons run away from cursor */
+.btn-troll:hover {
+  transform: translateY(5px);
+  transition: transform 0.1s ease;
+}
+
+/* Filter for screen glitches */
+.filter-glitch {
+  position: relative;
+}
+
+.filter-glitch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    transparent 0%,
+    rgba(255, 0, 255, 0.1) 10%,
+    transparent 10.5%,
+    transparent 90%,
+    rgba(0, 255, 255, 0.1) 90.5%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background-size: 100% 100px;
+  animation: pixel-glitch 10s infinite;
+}
+
+.filter-glitch:hover::before {
+  opacity: 1;
+}
