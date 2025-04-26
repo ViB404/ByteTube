@@ -1,10 +1,10 @@
 # ===== Stage 1: Builder =====
-FROM rust:1.77-slim as builder
+FROM rustlang/rust:nightly-slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y pkg-config libssl-dev build-essential ca-certificates
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
 # Cache dependencies
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 # Copy the built binary from builder
 COPY --from=builder /app/target/release/bytetube-backend /app/bytetube-backend
 
-# Tell Railway that your app listens on 8080
+# Tell Railway/Fly that your app listens on 8080
 EXPOSE 8080
 
 # Command to run
