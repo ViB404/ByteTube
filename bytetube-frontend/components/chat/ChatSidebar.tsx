@@ -21,7 +21,8 @@ export default function ChatSidebar({ roomId, className }: { roomId: string, cla
   const messageInputRef = useRef<HTMLInputElement>(null);
   
   // Define WebSocket URL with fallback
-  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080/ws';
+  // const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080/ws';
+     const wsBaseUrl = 'wss://bytetube.up.railway.app/ws';
 
   // Animation variants
   const sidebarVariants = {
