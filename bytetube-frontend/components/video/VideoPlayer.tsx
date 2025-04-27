@@ -22,8 +22,9 @@ const VideoPlayer = ({ videoId, onError, className }: VideoPlayerProps) => {
   const [controlsVisible, setControlsVisible] = useState(true);
   
   // Define API URL with fallback
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
-  
+//  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+  const apiUrl = "https://bytetube.up.railway.app/api"
+
   const {
     isPlaying,
     currentTime,

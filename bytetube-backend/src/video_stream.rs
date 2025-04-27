@@ -49,13 +49,20 @@ pub async fn stream_video(req: HttpRequest, path: web::Path<String>) -> Result<i
 
     // Get the video info from the supabase bucket
     // Hard-encoding this so that you can change it to any other provider 
-    // Make sure that it fetches .mp4 because content type is already hard-encoding 
+    // Make sure that it fetches .mp4 because the content type is already hard-encoding 
     let url_of_the_file = format!("https://wpvbeslwdiyorzkrmeed.supabase.co/storage/v1/object/public/videos//{}.mp4", id);
 
     // Fetching the video and converting it into the bytes
     let resp = client.get(&url_of_the_file).send().await.map_err(|e| {ErrorInternalServerError(e.to_string())})?;
-    let file_bytes = resp.bytes().await.map_err(|e| {ErrorInternalServerError(e.to_string())})?;
 
+    let file_bytes = if resp.status().is_success() {
+        resp.bytes().await.map_err(|e| {
+            ErrorInternalServerError(e.to_string())
+        })?
+    } else {
+        // Handle the case where the file is not found or there's another error
+        return Err(ErrorInternalServerError("Failed to fetch video file"));
+    };
 
     // Get the file size and content type
     let file_size = file_bytes.len() as u64;
