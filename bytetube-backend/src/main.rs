@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
 
     let chat_server = ChatServer::new();
 
-    println!("🚀 Streaming server running at http://localhost:8080");
+    // println!("🚀 Streaming server running at http://localhost:8080");
 
     HttpServer::new(move || {
             App::new()
@@ -27,7 +27,7 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(chat_handler))
             )
     })
-        .bind(("127.0.0.1", 8080))?
+        .bind(("0.0.0.0", 8080))?
         .run()
         .await
 }
