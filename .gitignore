@@ -15,3 +15,45 @@ target/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Ignore target directory (compiled binaries)
+target/
+
+# Ignore build artifacts and temporary files
+**/*.rs.bk
+Cargo.lock
+
+# Ignore by IDEs
+.idea/
+.vscode/
+*.sw?
+
+# Ignore by system
+.DS_Store
+Thumbs.db
+
+# Ignore by docker
+docker-compose.override.yml
+.env
+.env.*
+
+# Ignore compiled binaries
+*.exe
+*.out
+*.o
+
+# Ignore coverage files
+/coverage/
+
+# Ignore logs
+*.log
+
+# Ignore node_modules (in case frontend bhi same repo me ho)
+node_modules/
+
+# Ignore old backups
+*.bak
+
+# For macOS users
+.AppleDouble
+.LSOverride
