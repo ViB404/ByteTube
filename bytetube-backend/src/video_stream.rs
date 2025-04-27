@@ -10,26 +10,15 @@ use actix_web::http::StatusCode;
 
 use actix_web::error::ErrorInternalServerError;
 
-use std::fs::File;
-
-use std::io::Seek;
-use std::io::SeekFrom;
-use std::io::Read;
-
-use std::path::PathBuf;
-
-use mime_guess::from_path;
-
 use thiserror::Error;
 
 use crate::video_stream::VideoStreamError::InvalidRangeHeader;
 
+use reqwest::Client;
+
 // Define a custom error type
 #[derive(Error, Debug)]
 pub enum VideoStreamError {
-    #[error("File not found: {0}")]
-    FileNotFound(String),
-
     #[error("Error opening file: {0}")]
     FileOpenError(#[from] std::io::Error),
 
@@ -41,9 +30,6 @@ pub enum VideoStreamError {
 impl ResponseError for VideoStreamError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            VideoStreamError::FileNotFound(id) => {
-                HttpResponse::NotFound().body(format!("File not found: {}", id))
-            }
             VideoStreamError::FileOpenError(_) => {
                 HttpResponse::InternalServerError().body("Error opening the video file")
             }
@@ -59,29 +45,23 @@ impl ResponseError for VideoStreamError {
 pub async fn stream_video(req: HttpRequest, path: web::Path<String>) -> Result<impl Responder, actix_web::Error> {
     // Get the video id from the path
     let id = path.into_inner();
+    let client = Client::new();
 
-    // Construct the file path
-    let file_path = format!("src/videos/{}.mp4", id);
-    let path = PathBuf::from(&file_path);
+    // Get the video info from the supabase bucket
+    // Hard-encoding this so that you can change it to any other provider 
+    // Make sure that it fetches .mp4 because content type is already hard-encoding 
+    let url_of_the_file = format!("https://wpvbeslwdiyorzkrmeed.supabase.co/storage/v1/object/public/videos//{}.mp4", id);
 
-    // Check if the file exists
-    if !path.exists() {
-        return Err(VideoStreamError::FileNotFound(id).into());
-    }
+    // Fetching the video and converting it into the bytes
+    let resp = client.get(&url_of_the_file).send().await.map_err(|e| {ErrorInternalServerError(e.to_string())})?;
+    let file_bytes = resp.bytes().await.map_err(|e| {ErrorInternalServerError(e.to_string())})?;
 
-    // Open the file
-    let mut file = File::open(&path).map_err(|e| {
-        ErrorInternalServerError(e)
-    })?;
-
-    // Get the file metadata
-    let metadata = file.metadata().map_err(|e| {
-        ErrorInternalServerError(e)
-    })?;
 
     // Get the file size and content type
-    let file_size = metadata.len();
-    let content_type = from_path(&path).first_or_octet_stream().to_string();
+    let file_size = file_bytes.len() as u64;
+    
+    // Hard-encoding the content-type
+    let content_type = "video/mp4";
 
     // Handle range request
     if let Some(range_header) = req.headers().get(header::RANGE) {
@@ -110,32 +90,20 @@ pub async fn stream_video(req: HttpRequest, path: web::Path<String>) -> Result<i
 
             // Adjust the end value if it's larger than the file size
             let end = std::cmp::min(end, file_size - 1);
-
-            // Seek to the start of the range
-            file.seek(SeekFrom::Start(start)).map_err(|e| ErrorInternalServerError(e))?;
-
-            // Calculate the chunk size
-            let chunk_size = end - start + 1;
-
-            // Read the chunk
-            let mut chunk = vec![0; chunk_size as usize];
-            file.read_exact(&mut chunk).map_err(|e| ErrorInternalServerError(e))?;
+            let chunk = file_bytes.slice(start as usize..=end as usize);
 
             // Return the partial content response
             return Ok(HttpResponse::build(StatusCode::PARTIAL_CONTENT)
                 .insert_header((header::CONTENT_TYPE, content_type))
-                .insert_header((header::CONTENT_LENGTH, chunk_size.to_string()))
+                .insert_header((header::CONTENT_LENGTH, chunk.len().to_string()))
                 .insert_header((header::CONTENT_RANGE, format!("bytes {}-{}/{}", start, end, file_size)))
                 .body(chunk));
         }
     }
 
-    // No range header => send the whole file
-    let mut whole_file = vec![0; file_size as usize];
-    file.read_exact(&mut whole_file).map_err(|e| ErrorInternalServerError(e))?;
-
+    // No range header => sends the whole file
     Ok(HttpResponse::Ok()
         .insert_header((header::CONTENT_TYPE, content_type))
         .insert_header((header::CONTENT_LENGTH, file_size.to_string()))
-        .body(whole_file))
+        .body(file_bytes))
 }
