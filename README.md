@@ -11,7 +11,7 @@ A high-performance video streaming platform built with Rust and Next.js, deliver
 
 ByteTube demonstrates modern video streaming architecture with chunked video delivery, real-time chat capabilities, and a responsive dark-themed UI. The project emphasizes backend performance through Rust's efficiency while leveraging Next.js for a seamless frontend experience.
 
-![ByteTube Screenshot](https://via.placeholder.com/800x450?text=ByteTube+Interface)
+![ByteTube Screenshot](https://i.ibb.co/2Y16XrSc/download-1.jpg)
 
 ## ✨ Key Features
 
